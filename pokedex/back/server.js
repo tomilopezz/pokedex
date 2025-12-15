@@ -9,16 +9,16 @@ const port = 3000;
 app.use(cors());
 app.use(express.json());
 
-// Ruta base
+
 app.get('/', (req, res) => {
   res.send('Servidor funcionando con Express y MySQL (pokedex)');
 });
 
-// GET /equipo -> devuelve todos los registros de la tabla equipo
+
 app.get('/equipo', async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT * FROM equipo ORDER BY id ASC');
-    res.json(rows); // [{id, nombre, imagen}, ...] o [] si está vacía
+    res.json(rows);
   } catch (err) {
     console.error('Error GET /equipo:', err);
     res.status(500).json({ error: 'Error al obtener equipo' });
@@ -33,10 +33,9 @@ app.post('/equipo', async (req, res) => {
     }
 
     try {
-        // borrar equipo anterior
+     
         await pool.query("DELETE FROM equipo");
 
-        // guardar nuevo equipo
         for (const pokemon of equipo) {
             await pool.query(
                 "INSERT INTO equipo (id, nombre, imagen) VALUES (?, ?, ?)",
@@ -51,17 +50,8 @@ app.post('/equipo', async (req, res) => {
 });
 
 
-// DELETE /equipo -> borra todo el equipo
-app.delete('/equipo', async (req, res) => {
-  try {
-    await pool.query('DELETE FROM equipo');
-    res.json({ message: 'Equipo borrado' });
-  } catch (err) {
-    console.error('Error DELETE /equipo:', err);
-    res.status(500).json({ error: 'Error al borrar equipo' });
-  }
-});
 
 app.listen(port, () => {
   console.log(`Servidor listo en http://localhost:${port}`);
 });
+
